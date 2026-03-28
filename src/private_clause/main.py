@@ -2,6 +2,7 @@ import argparse
 import logging
 import asyncio
 import nest_asyncio
+import sys
 
 from private_clause.utils import init_logging, init_llama_index
 from private_clause.ollama_setup import check_ollama_connection, ollama_setup
@@ -24,9 +25,16 @@ def get_args():
 
     parser.add_argument("--ollama-host", default="localhost")
     parser.add_argument("--ollama-port", type=int, default=11434)
-    parser.add_argument("--embeddings", default="gemma:2b")
+    parser.add_argument("--embeddings", default="nomic-embed-text")
     parser.add_argument("--model", default="llama3.2:3b")
     parser.add_argument("--data-dir", default="/opt/docs")
+    
+    parser.add_argument(
+        "--debug", 
+        action="store_true", 
+        help="Enable detailed debug logging"
+    )
+    
 
     subparsers = parser.add_subparsers(dest="command", required=True, help="Task to perform")
 
@@ -37,13 +45,7 @@ def get_args():
     load_parser = subparsers.add_parser("load", help="Load PDF into Neo4j")
     
     
-    # New Logging Option
-    parser.add_argument(
-        "--debug", 
-        action="store_true", 
-        help="Enable detailed debug logging"
-    )
-    
+   
     return parser.parse_args()
 
 
@@ -55,20 +57,20 @@ async def async_main():
     # Always check ollama setup
     if not check_ollama_connection(args.ollama_host, args.ollama_port):
         logger.error("Ollama is unreachable")
-        exit(-1)
+        sys.exit(-1)
     
     if not ollama_setup(args.model, args.embeddings):
         logger.error("Failed to setup Ollama")
-        exit(-1)
+        sys.exit(-1)
 
     # Always check Neo4j setup
     if not check_neo4j_connection(args.neo4j_user, args.neo4j_password, args.neo4j_host, args.neo4j_port):
         logger.error("Neo4j is unreachable")
-        exit(-1)
+        sys.exit(-1)
 
     # If command is init just stop there
     if args.command == "init":
-        exit(0)
+        sys.exit(0)
 
     # Intialize Llama Index
     init_llama_index(args.ollama_host, args.ollama_port, args.model, args.embeddings)

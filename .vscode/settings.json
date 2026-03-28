@@ -1,0 +1,14 @@
+{
+  "terminal.integrated.profiles.osx": {
+    "Bash-Venv-Forced": {
+      "path": "/opt/homebrew/bin/bash",
+      "args": [
+       "--login",
+        "-c",
+        "source ${workspaceFolder}/.venv/bin/activate && /opt/homebrew/bin/bash"
+      ]
+    }
+  },
+  "terminal.integrated.defaultProfile.osx": "Bash-Venv-Forced",
+  "python.terminal.activateEnvironment": false
+}

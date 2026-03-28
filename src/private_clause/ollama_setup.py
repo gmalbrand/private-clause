@@ -35,7 +35,7 @@ def check_ollama_connection(hostname:str, port:int) -> bool:
         if resp.status_code != 200:
             return False
         
-        logger.debug(f"Ollama version : {resp.json()["version"]}")
+        logger.debug(f"Ollama version : {resp.json()['version']}")
         return True
     except Exception as e:
         logger.error(f"Failed to access Ollama at http://{hostname}:{port}, exception : {e}")

@@ -8,7 +8,7 @@ from typing import Literal
 
 logger = logging.getLogger(__name__)
 
-def load_from_directory(dir_path: str, user:str, password:str, host:str, port):
+def load_from_directory(dir_path: str, user:str, password:str, host:str, port:int):
     """Loads all PDFs in a directory and builds a Vector + Graph index."""
     
     # 1. Initialize Neo4j Store
