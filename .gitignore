@@ -21,6 +21,7 @@ sdist/
 var/
 wheels/
 share/python-wheels/
+trash/
 *.egg-info/
 .installed.cfg
 *.egg

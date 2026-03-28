@@ -1,0 +1,24 @@
+# --- Core AI & LLM ---
+ollama
+langchain
+langchain-community  # Community-led integrations (for Ollama)
+
+# --- Web & API (Optional but recommended) ---
+fastapi
+uvicorn[standard]    # ASGI server to run FastAPI
+
+# --- Data & Utils ---
+pydantic
+requests
+python-dotenv        # Manage environment variables (.env files)
+numpy
+
+# --- Development Tools ---
+pytest               # Testing your code
+black                # Code formatter
+
+llama-index-core                 # The base framework
+llama-index-llms-ollama          # Connector for Ollama LLMs
+llama-index-embeddings-ollama    # Connector for Ollama Embeddings
+llama-index-readers-file         # To load local PDFs/Docs (replaces old SimpleDirectoryReader)
+llama-index-graph-stores-neo4j   # To store both vectors and graphs

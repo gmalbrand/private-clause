@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "private-clause"
+version = "0.1.0"
+description = "Legal RAG system using LlamaIndex and Neo4j"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [{ name = "Your Name", email = "you@example.com" }]
+
+# --- Core Dependencies ---
+dependencies = [
+    "llama-index-core>=0.11.0",
+    "llama-index-llms-ollama",
+    "llama-index-embeddings-ollama",
+    "llama-index-readers-file",      # Modern replacement for SimpleDirectoryReader
+    "llama-index-graph-stores-neo4j",
+    "pydantic>=2.0.0",               # Required for LlamaIndex and FastAPI
+    "python-dotenv",                 # For .env management
+    "fastapi",                       # For the Web API
+    "uvicorn[standard]",             # ASGI Server
+    "neo4j",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "black",
+    "ruff"                           # Fast linter for 2026 standards
+]
+
+[project.scripts]
+# One command to rule them all
+private-clause = "private_clause.main:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

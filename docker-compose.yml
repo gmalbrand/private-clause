@@ -1,0 +1,46 @@
+services:
+  # Neo4j: The Structural + Vector Database
+  neo4j:
+    image: neo4j:latest
+    user: "${UID}:${GID}"
+    container_name: neo4j-service
+    restart: always
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    environment:
+      - NEO4J_AUTH=neo4j/privacy-clause-2026
+      - NEO4J_server_memory_heap_initial__size=512m
+      - NEO4J_server_memory_heap_max__size=1G
+      - NEO4J_server_memory_pagecache_size=512m
+      - NEO4J_PLUGINS=["apoc"]
+      - NEO4J_dbms_security_procedures_unrestricted=apoc.*
+      - NEO4J_dbms_security_procedures_allowlist=apoc.*
+    deploy:
+      resources:
+        limits:
+          cpus: '1.5'  # Uses 1.5 cores maximum
+          memory: 2G
+    volumes:
+      - /opt/neo4j/data:/data
+      - /opt/neo4j/plugins:/plugins
+
+  # Ollama: The AI Engine (CPU Intensive)
+  ollama:
+    image: ollama/ollama:latest
+    user: "${UID}:${GID}"
+    container_name: ollama-service
+    restart: always
+    ports:
+      - "11434:11434"
+    environment:
+      - HOME=/tmp          # Ollama will now look in /tmp/.ollama
+      - OLLAMA_MODELS=/tmp/.ollama/models
+      - OLLAMA_KEEP_ALIVE=5m
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'  # Caps Ollama so it doesn't "starve" the OS
+          memory: 3.5G
+    volumes:
+      - /opt/ollama/data:/tmp/.ollama
