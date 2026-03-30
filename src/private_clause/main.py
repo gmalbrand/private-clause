@@ -10,7 +10,7 @@ from private_clause.neo4j_setup import check_neo4j_connection
 from private_clause.documents import load_from_directory
 
 logger = logging.getLogger(__name__)
-nest_asyncio.apply()
+#nest_asyncio.apply()
 
 def get_args():
     parser = argparse.ArgumentParser(prog="private-clause", description="Legal RAG Management")
@@ -25,7 +25,7 @@ def get_args():
 
     parser.add_argument("--ollama-host", default="localhost")
     parser.add_argument("--ollama-port", type=int, default=11434)
-    parser.add_argument("--embeddings", default="nomic-embed-text")
+    parser.add_argument("--embeddings", default="nomic-embed-text:latest")
     parser.add_argument("--model", default="llama3.2:3b")
     parser.add_argument("--data-dir", default="/opt/docs")
     
@@ -70,7 +70,7 @@ async def async_main():
 
     # If command is init just stop there
     if args.command == "init":
-        sys.exit(0)
+        return
 
     # Intialize Llama Index
     init_llama_index(args.ollama_host, args.ollama_port, args.model, args.embeddings)
@@ -81,8 +81,43 @@ async def async_main():
         except Exception as e:
             logger.error(f"Failed to load documents from {args.data_dir} : {e}")
 
+
+
+def sync_main():
+    args = get_args()
+    init_logging(args.debug)
+
+    # Always check ollama setup
+    if not check_ollama_connection(args.ollama_host, args.ollama_port):
+        logger.error("Ollama is unreachable")
+        sys.exit(-1)
+    
+    if not ollama_setup(args.model, args.embeddings):
+        logger.error("Failed to setup Ollama")
+        sys.exit(-1)
+
+    # Always check Neo4j setup
+    if not check_neo4j_connection(args.neo4j_user, args.neo4j_password, args.neo4j_host, args.neo4j_port):
+        logger.error("Neo4j is unreachable")
+        sys.exit(-1)
+
+    # If command is init just stop there
+    if args.command == "init":
+        return
+
+    # Intialize Llama Index
+    init_llama_index(args.ollama_host, args.ollama_port, args.model, args.embeddings)
+
+    if args.command == "load":
+        try:
+            load_from_directory(args.data_dir, args.neo4j_user, args.neo4j_password, args.neo4j_host, args.neo4j_port)
+        except Exception as e:
+            logger.error(f"Failed to load documents from {args.data_dir} : {e}")
+
+
 def main():
-    logger.debug("Running asyncio mode")
+    sync_main()
+    return
     """Entry point defined in pyproject.toml"""
     loop = asyncio.get_event_loop()
     try:
